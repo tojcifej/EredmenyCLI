@@ -35,13 +35,14 @@ namespace EredmenyCLI
             }
         }
 
-        public static List<Eredmeny> FindAllBySearch(string vezeteknev, string keresztnev, string targy, string szazalek, string erdemjegy)
+        public static List<Eredmeny> FindAllBySearch(string id, string vezeteknev, string keresztnev, string targy, string szazalek, string erdemjegy)
         {
             List<Eredmeny> Eredmeny = new List<Eredmeny>();
 
             foreach (Eredmeny eredmeny in FindAll())
             {
-
+                if (!eredmeny.ID.ToString().ToLower().Contains(id.ToLower().Trim()))
+                    continue;
                 if (!eredmeny.VezetekNev.ToLower().Contains(vezeteknev.ToLower().Trim()))
                     continue;
                 if (!eredmeny.KeresztNev.ToLower().Contains(keresztnev.ToLower().Trim()))
@@ -59,5 +60,53 @@ namespace EredmenyCLI
             return Eredmeny;
         }
 
+        public static Eredmeny FindByID(string id)
+        {
+            List<Eredmeny> eredmenyek = FindAll();
+
+            for (int i = 0; i < eredmenyek.Count; i++)
+            {
+                if (id == eredmenyek[i].ID.ToString())
+                    return eredmenyek[i];
+            }
+
+            return null;
+        }
+
+        public static Eredmeny Save(Eredmeny eredmeny)
+        {
+            List<Eredmeny> eredmenyek = FindAll();
+
+            if (eredmeny.ID == 0)
+            {
+                eredmeny.ID = eredmenyek.Last().ID + 1;
+
+                eredmenyek.Add(eredmeny);
+            }
+            else
+            {
+                for (int i = 0; i < eredmenyek.Count; i++)
+                {
+                    if (eredmenyek[i].ID == eredmeny.ID)
+                    {
+                        eredmenyek[i] = eredmeny;
+                    }
+                }
+            }
+
+            using (StreamWriter writer = new StreamWriter(path))
+            {
+                writer.WriteLine("id,vezeteknev,keresztnev,targy,szazalek,erdemjegy");
+
+                foreach (var item in eredmenyek)
+                {
+                    string line = $"{item.ID},{item.VezetekNev},{item.KeresztNev},{item.Targy},{item.Szazalek},{item.Erdemjegy}";
+                    writer.WriteLine(line);
+                }
+            }
+
+
+            return eredmeny;
+        }
     }
 }

@@ -15,6 +15,14 @@ namespace EredmenyCLI
 
             List<Eredmeny> eredmenyek = EredmenyRepo.FindAll();
 
+
+            Eredmeny valami = EredmenyRepo.FindByID("110");
+
+            valami.Szazalek = 100;
+
+            EredmenyRepo.Save(valami);
+
+
             foreach (var item in eredmenyek)
             {
                 Console.WriteLine(item);
